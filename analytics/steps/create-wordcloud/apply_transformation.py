@@ -1,10 +1,11 @@
+import os
 import boto3
 import pandas as pd
 import nltk
-from nltk.corpus import stopwords
 
+from nltk.corpus import stopwords
 from io import BytesIO
-from utils.etl_s3 import S3ApiETL
+from utils.etl_s3 import S3ApiETL               # pylint: disable=import-error
 
 nltk.data.path.append("/tmp")
 nltk.download('stopwords', download_dir='/tmp')
@@ -12,20 +13,20 @@ ESW = stopwords.words('english')
 
 stop_words = list(ESW) + ["comcast", "xfinity", "i", "i'm", "don't", "xfintity", "am", "pm", "pt", "gb", "fcc", "br"]
 punctuations_regex = r'(\'s|\W|\W+|[0-9_-])'
+
 LIMIT_MOST_USED_WORDS = 500
+DATALAKE_BUCKET = os.getenv('DATALAKE_BUCKET')
+ENRICHED_PREFIX = os.getenv('ENRICHED_PREFIX')
+
+source_prefix = f'{ENRICHED_PREFIX}/complaints-standard'
+target_prefix = f'{ENRICHED_PREFIX}/word-cloud'
 
 s3_client = boto3.client("s3")
-
-sura_bucket = "sura-text-mining-poc"
-source_prefix = "enriched/complaints-standard"
-
-target_prefix = "enriched/word-cloud"
-s3_helper = S3ApiETL(s3_client, sura_bucket, target_prefix)
+s3_helper = S3ApiETL(s3_client, DATALAKE_BUCKET, target_prefix)
 
 
 def handler(_, __):
-    df_source = s3_helper.get_df_from_s3(sura_bucket, source_prefix)
-
+    df_source = s3_helper.get_df_from_s3(DATALAKE_BUCKET, source_prefix)
     df_result = apply_transformation(df_source)
 
     s3_helper.save_df(df_result)

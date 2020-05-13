@@ -25,14 +25,67 @@ provider:
   stackTags: ${self:custom.tags}
   deploymentBucket: kranio-serverless-deployments
   iamRoleStatements: ${self:custom.policies}
+  memorySize: 3008
+  timeout: 900
   environment:
     DATALAKE_BUCKET: kranio-datalake
-    
+    ENRICHED_PREFIX: internal/webinar/leoCamilo/enriched
+    RAW_PREFIX: internal/webinar/leoCamilo/raw
+    HUB_PREFIX: internal/webinar/leoCamilo/hub
+
 
 functions:
   applySentimentAnalysis:
     handler: steps/sentiment-analysis/apply_transformation.handler
-    memorySize: 3008
-    timeout: 900
+    layers:
+      - ${self:custom.utilsLayerArn}
+  
+  applyRankingRegions:
+    handler: steps/ranking-regions-complaints/apply_transformation.handler
+    layers:
+      - ${self:custom.utilsLayerArn}
+
+  applyEmailCountByAge:
+    handler: steps/get-email-count-by-age/apply_transformation.handler
+    layers:
+      - ${self:custom.utilsLayerArn}
+  
+  applyEmailCountByAge:
+    handler: steps/complaints-without-multiline/apply_transformation.handler
+    layers:
+      - ${self:custom.utilsLayerArn}
+
+  applyClusteringMailslv1:
+    handler: steps/clustering-mails/apply_transformation.handler_lvl1
+    layers:
+      - ${self:custom.utilsLayerArn}
+  
+  applyClusteringMailslv2:
+    handler: steps/clustering-mails/apply_transformation.handler_lvl2
+    layers:
+      - ${self:custom.utilsLayerArn}
+  
+  applyTextQualityScore:
+    handler: steps/text-quality-score/apply_transformation.handler
+    layers:
+      - ${self:custom.utilsLayerArn}
+  
+  applyTextQualityScoreWithComprehend:
+    handler: steps/text-quality-score/apply_transformation_with_comprehend.handler
+    layers:
+      - ${self:custom.utilsLayerArn}
+
+  applyTextQualityPriority:
+    handler: steps/text-quality-score/priority.handler
+    layers:
+      - ${self:custom.utilsLayerArn}
+  
+  joinData:
+    handler: steps/join-data/apply_transformation.handler
+    layers:
+      - ${self:custom.utilsLayerArn}
+  
+  createWordcloud:
+    handler: steps/create-wordcloud/apply_transformation.handler
     layers:
       - ${self:custom.utilsLayerArn}

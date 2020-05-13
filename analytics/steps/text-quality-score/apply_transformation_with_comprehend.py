@@ -1,24 +1,26 @@
+import os
 import boto3
 import pandas as pd
-from io import BytesIO
 import numpy as np
-from utils.etl_s3 import S3ApiETL
 
-MAX_SENTENCE_LENGTH_IN_CHARS = 4500
+from io import BytesIO
+from utils.etl_s3 import S3ApiETL               # pylint: disable=import-error
+
 MAX_BATCH_LIMIT = 23
+MAX_SENTENCE_LENGTH_IN_CHARS = 4500
+DATALAKE_BUCKET = os.getenv('DATALAKE_BUCKET')
+ENRICHED_PREFIX = os.getenv('ENRICHED_PREFIX')
+RAW_PREFIX = os.getenv('RAW_PREFIX')
 
-s3_client = boto3.client("s3")
+target_prefix = f'{ENRICHED_PREFIX}/text-quality-score-with-comprehend'
+
 comprehend_client = boto3.client('comprehend')
-
-sura_bucket = "sura-text-mining-poc"
-target_prefix = "enriched/text-quality-score-with-comprehend"
-
-s3_helper = S3ApiETL(s3_client, sura_bucket, target_prefix)
+s3_client = boto3.client("s3")
+s3_helper = S3ApiETL(s3_client, DATALAKE_BUCKET, target_prefix)
 
 
 def handler(_, __):
-    df_source = get_source()
-
+    df_source = S3ApiETL.get_object_as_dataframe(s3_client, DATALAKE_BUCKET, f'{RAW_PREFIX}/complaints.csv')
     df_result = apply_transformation(df_source)
 
     s3_helper.save_df(df_result)
@@ -31,7 +33,6 @@ def apply_transformation(df_source):
     df = df[opened_tickets_indexes]
 
     df["TextToBeAnalyzed"] = df["Description"].str[:MAX_SENTENCE_LENGTH_IN_CHARS]
-
     df["QualityScore"] = 0.0
 
     (rows, _) = df.shape
@@ -52,18 +53,6 @@ def apply_transformation(df_source):
     df_result = df_result.sort_values(by=["QualityScore"], ascending=False)
 
     return df_result
-
-
-def get_source():
-    bucket = "sura-text-mining-poc"
-    key = 'raw/complaints/complaints.csv'
-
-    obj = s3_client.get_object(Bucket=bucket, Key=key)
-    obj = BytesIO(obj['Body'].read())
-
-    df_source = pd.read_csv(obj)
-
-    return df_source
 
 
 def select_score_list(syntax_tokens):

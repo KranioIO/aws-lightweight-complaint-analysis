@@ -1,24 +1,25 @@
+import os
 import boto3
 import pandas as pd
-from io import BytesIO
-from utils.etl_s3 import S3ApiETL
-from functions.helpers import TextQualityAnalyzer as TQA
-from functions.helpers import words_list_from
 
+from io import BytesIO
+from utils.etl_s3 import S3ApiETL                       # pylint: disable=import-error
+from steps.helpers import TextQualityAnalyzer as TQA    # pylint: disable=import-error
+from steps.helpers import words_list_from               # pylint: disable=import-error
+
+DATALAKE_BUCKET = os.getenv('DATALAKE_BUCKET')
+ENRICHED_PREFIX = os.getenv('ENRICHED_PREFIX')
+RAW_PREFIX = os.getenv('RAW_PREFIX')
+HUB_PREFIX = os.getenv('HUB_PREFIX')
+
+target_prefix = f'{ENRICHED_PREFIX}/text-quality-score'
 
 s3_client = boto3.client("s3")
-
-sura_bucket = "sura-text-mining-poc"
-target_prefix = "enriched/text-quality-score"
-
-
-
-s3_helper = S3ApiETL(s3_client, sura_bucket, target_prefix)
+s3_helper = S3ApiETL(s3_client, DATALAKE_BUCKET, target_prefix)
 
 
 def handler(_, __):
-    df_source = get_source()
-
+    df_source = S3ApiETL.get_object_as_dataframe(s3_client, DATALAKE_BUCKET, f'{RAW_PREFIX}/complaints.csv')
     df_result = apply_transformation(df_source)
 
     s3_helper.save_df(df_result)
@@ -38,23 +39,8 @@ def apply_transformation(df_source):
     return execution_of_the_analysis(df_source, tqa)
 
 
-def get_source():
-    bucket = "sura-text-mining-poc"
-    key = 'raw/complaints/complaints.csv'
-
-    obj = s3_client.get_object(Bucket=bucket, Key=key)
-    obj = BytesIO(obj['Body'].read())
-
-    df_source = pd.read_csv(obj)
-
-    return df_source
-
-
 def get_dictionary():
-    bucket = "sura-text-mining-poc"
-    key = 'hub/dictionary/english.0'
-
-    obj = s3_client.get_object(Bucket=bucket, Key=key)
+    obj = s3_client.get_object(Bucket=DATALAKE_BUCKET, Key=f'{HUB_PREFIX}/dictionary/english.0')
     dictionary = obj['Body'].read().decode('utf-8')
 
     return dictionary
