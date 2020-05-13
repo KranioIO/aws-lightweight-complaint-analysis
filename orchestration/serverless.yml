@@ -29,7 +29,7 @@ custom:
 provider:
   name: aws
   stage: ${opt:stage, 'dev'}
-  region: us-east-1
+  region: us-east-2
   runtime: python3.7
   stackTags: ${self:custom.tags}
   deploymentBucket: kranio-serverless-deployments

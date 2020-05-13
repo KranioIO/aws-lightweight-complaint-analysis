@@ -59,8 +59,8 @@ def apply_transformation(df_source_list):
 
 def get_source_list():
     return {
-        "age"       : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/complaints-without-multilines'),
-        "source"    : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/complaints-with-age'),
+        "age"       : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/complaints-with-age'),
+        "source"    : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/complaints-without-multilines'),
         # "cluster"   : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/clustered-mails'),
         "sentiment" : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/sentiment-analysis'),
         "priority"  : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/complaints-priority')
