@@ -3,8 +3,8 @@ import boto3
 import pandas as pd
 
 from utils.etl_s3 import S3ApiETL                       # pylint: disable=import-error
-from steps.helpers import TextQualityAnalyzer as TQA    # pylint: disable=import-error
-from steps.helpers import words_list_from               # pylint: disable=import-error
+from steps.text_quality_score.helpers import TextQualityAnalyzer as TQA    # pylint: disable=import-error
+from steps.text_quality_score.helpers import words_list_from               # pylint: disable=import-error
 
 DATALAKE_BUCKET = os.getenv('DATALAKE_BUCKET')
 ENRICHED_PREFIX = os.getenv('ENRICHED_PREFIX')

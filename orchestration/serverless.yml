@@ -11,13 +11,13 @@ custom:
   analytics:
     rankingRegions: ${cf:${self:custom.analysisProject}.ApplyRankingRegionsLambdaFunctionQualifiedArn}
     emailCountByAge: ${cf:${self:custom.analysisProject}.ApplyEmailCountByAgeLambdaFunctionQualifiedArn}
-    textQualityScore: ${cf:${self:custom.analysisProject}.ApplyTextQualityPriorityLambdaFunctionQualifiedArn}
+    textQualityScore: ${cf:${self:custom.analysisProject}.ApplyTextQualityScoreLambdaFunctionQualifiedArn}
     sentimentAnalysis: ${cf:${self:custom.analysisProject}.ApplySentimentAnalysisLambdaFunctionQualifiedArn}
     clusteringMailslv1: ${cf:${self:custom.analysisProject}.ApplyClusteringMailslv1LambdaFunctionQualifiedArn}
     clusteringMailslv2: ${cf:${self:custom.analysisProject}.ApplyClusteringMailslv2LambdaFunctionQualifiedArn}
     complaintsWithoutMultiline: ${cf:${self:custom.analysisProject}.ApplyComplaintsWithoutMultilineLambdaFunctionQualifiedArn}
     textQualityScoreWithComprehend: ${cf:${self:custom.analysisProject}.ApplyTextQualityScoreWithComprehendLambdaFunctionQualifiedArn}
-    textQualityPriority: ${cf:${self:custom.analysisProject}.ApplyTextQualityScoreLambdaFunctionQualifiedArn}
+    textQualityPriority: ${cf:${self:custom.analysisProject}.ApplyTextQualityPriorityLambdaFunctionQualifiedArn}
     createWordcloud: ${cf:${self:custom.analysisProject}.CreateWordcloudLambdaFunctionQualifiedArn}
     joinData: ${cf:${self:custom.analysisProject}.JoinDataLambdaFunctionQualifiedArn}
   infra:

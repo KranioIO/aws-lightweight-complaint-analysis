@@ -16,7 +16,7 @@ def create(_, __):
             },
             {
                 'Key': 'Client',
-                'Value': 'Sura'
+                'Value': 'Webinar'
             },
         ]
     )
@@ -26,8 +26,6 @@ def create(_, __):
         response_2 = client.describe_endpoint(
             EndpointArn=response['EndpointArn']
         )
-
-        print(response_2['EndpointProperties']['Status'])
 
         if response_2['EndpointProperties']['Status'] != 'CREATING':
             break

@@ -66,17 +66,17 @@ functions:
       - ${self:custom.utilsLayerArn}
   
   applyTextQualityScore:
-    handler: steps/text-quality-score/apply_transformation.handler
+    handler: steps/text_quality_score/apply_transformation.handler
     layers:
       - ${self:custom.utilsLayerArn}
   
   applyTextQualityScoreWithComprehend:
-    handler: steps/text-quality-score/apply_transformation_with_comprehend.handler
+    handler: steps/text_quality_score/apply_transformation_with_comprehend.handler
     layers:
       - ${self:custom.utilsLayerArn}
 
   applyTextQualityPriority:
-    handler: steps/text-quality-score/priority.handler
+    handler: steps/text_quality_score/priority.handler
     layers:
       - ${self:custom.utilsLayerArn}
   
