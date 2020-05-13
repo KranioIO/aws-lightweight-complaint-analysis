@@ -50,7 +50,7 @@ functions:
     layers:
       - ${self:custom.utilsLayerArn}
   
-  applyEmailCountByAge:
+  applyComplaintsWithoutMultiline:
     handler: steps/complaints-without-multiline/apply_transformation.handler
     layers:
       - ${self:custom.utilsLayerArn}

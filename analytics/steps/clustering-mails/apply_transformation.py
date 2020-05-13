@@ -3,7 +3,6 @@ import pandas as pd
 import boto3
 import re
 
-from io import BytesIO
 from utils.etl_s3 import S3ApiETL           # pylint: disable=import-error
 
 ENDPOINT_ARN = "arn:aws:comprehend:us-east-1:193024568733:document-classifier-endpoint/complaints-training-v2"

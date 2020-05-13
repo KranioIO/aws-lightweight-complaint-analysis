@@ -74,3 +74,13 @@ class S3ApiETL(S3ApiIntegration):
             last_key_path = self.save_file_by_bytes_result(output_json, s3_partition_options)
 
         return last_key_path
+    
+    @staticmethod
+    def get_object_as_dataframe(client, bucket, key, file_type='csv'):
+        if file_type == 'csv':
+            obj = client.get_object(Bucket=bucket, Key=key)
+            obj = io.BytesIO(obj['Body'].read())
+
+            return pd.read_csv(obj)
+        
+        return None

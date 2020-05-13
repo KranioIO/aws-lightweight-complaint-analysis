@@ -2,7 +2,6 @@ import os
 import boto3
 import pandas as pd
 
-from io import BytesIO
 from utils.etl_s3 import S3ApiETL           # pylint: disable=import-error
 
 DATALAKE_BUCKET = os.getenv('DATALAKE_BUCKET')

@@ -3,7 +3,6 @@ import boto3
 import pandas as pd
 import numpy as np
 
-from io import BytesIO
 from utils.etl_s3 import S3ApiETL               # pylint: disable=import-error
 
 MAX_BATCH_LIMIT = 23

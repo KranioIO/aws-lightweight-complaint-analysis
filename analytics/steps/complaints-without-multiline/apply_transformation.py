@@ -4,7 +4,6 @@ import pandas as pd
 import nltk
 
 from nltk.corpus import stopwords
-from io import BytesIO
 from utils.etl_s3 import S3ApiETL               # pylint: disable=import-error
 
 # from sklearn.feature_extraction.stop_words import ENGLISH_STOP_WORDS as ESW
