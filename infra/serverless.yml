@@ -14,7 +14,7 @@ provider:
   region: us-east-2
   runtime: python3.7
   stackTags: ${self:custom.tags}
-  deploymentBucket: kranio-serverless-deployments
+  deploymentBucket: kranio-serverless-deployments-us-east-2
   iamRoleStatements: ${self:custom.policies}
 
 functions:

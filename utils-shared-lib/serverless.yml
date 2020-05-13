@@ -16,7 +16,7 @@ provider:
   runtime: python3.7
   region: us-east-2
   stage: ${opt:stage, 'dev'}
-  deploymentBucket: kranio-serverless-deployments
+  deploymentBucket: kranio-serverless-deployments-us-east-2
   stackTags: ${self:custom.tags}
   logRetentionInDays: 7
 

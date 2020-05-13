@@ -12,8 +12,8 @@ pipelines:
           - pip
           - node
         script:
-          # - pip3 install awscli --upgrade --user
-          # - export PATH=~/.local/bin:$PATH
+          - pip3 install awscli --upgrade --user
+          - export PATH=~/.local/bin:$PATH
           - cd infra && npm install && serverless deploy --stage dev && cd ..
           - cd utils-shared-lib && npm install && serverless deploy --stage dev && cd ..
           - cd analytics && npm install && serverless deploy --stage dev && cd ..
