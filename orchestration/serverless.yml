@@ -86,26 +86,26 @@ stepFunctions:
                     Resource: ${self:custom.analytics.complaintsWithoutMultiline}
                     End: true
               
-              - StartAt: CreateClusterEndpoint
-                States:
-                  CreateClusterEndpoint:
-                    Type: Task
-                    Resource: ${self:custom.infra.createClusterEndpoint}
-                    Next: ClusteringMailsLevel1
-                  ClusteringMailsLevel1:
-                    Type: Task
-                    Resource: ${self:custom.analytics.clusteringMailslv1}
-                    Next: ClusteringMailsLevel2
-                  ClusteringMailsLevel2:
-                    Type: Task
-                    Resource: ${self:custom.analytics.clusteringMailslv2}
-                    Next: DeleteClusterEndpoint
-                  DeleteClusterEndpoint:
-                    Type: Task
-                    Resource: ${self:custom.infra.createClusterEndpoint}
-                    End: true
+              # - StartAt: CreateClusterEndpoint
+              #   States:
+              #     CreateClusterEndpoint:
+              #       Type: Task
+              #       Resource: ${self:custom.infra.createClusterEndpoint}
+              #       Next: ClusteringMailsLevel1
+              #     ClusteringMailsLevel1:
+              #       Type: Task
+              #       Resource: ${self:custom.analytics.clusteringMailslv1}
+              #       Next: ClusteringMailsLevel2
+              #     ClusteringMailsLevel2:
+              #       Type: Task
+              #       Resource: ${self:custom.analytics.clusteringMailslv2}
+              #       Next: DeleteClusterEndpoint
+              #     DeleteClusterEndpoint:
+              #       Type: Task
+              #       Resource: ${self:custom.infra.deleteClusterEndpoint}
+              #       End: true
             Next: JoiningData
-          
+
           JoiningData:
             Type: Task
             Resource: ${self:custom.analytics.joinData}

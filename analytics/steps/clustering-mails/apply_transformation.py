@@ -13,8 +13,8 @@ RAW_PREFIX = os.getenv('RAW_PREFIX')
 s3_client = boto3.client("s3")
 comprehend_client = boto3.client('comprehend')
 
-target_prefix_lvl1 = "enriched/clustered-mails/0"
-target_prefix_lvl2 = "enriched/clustered-mails/1100"
+target_prefix_lvl1 = f'{ENRICHED_PREFIX}/clustered-mails/0'
+target_prefix_lvl2 = f'{ENRICHED_PREFIX}/clustered-mails/1100'
 
 s3_helper_lvl1 = S3ApiETL(s3_client, DATALAKE_BUCKET, target_prefix_lvl1)
 s3_helper_lvl2 = S3ApiETL(s3_client, DATALAKE_BUCKET, target_prefix_lvl2)

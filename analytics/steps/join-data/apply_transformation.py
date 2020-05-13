@@ -22,7 +22,7 @@ def handler(_, __):
 
 def apply_transformation(df_source_list):
     df_result = df_source_list["source"].copy()
-    df_cluster = df_source_list["cluster"]
+    # df_cluster = df_source_list["cluster"]
     df_sentiment = df_source_list["sentiment"]
     df_priority = df_source_list["priority"]
     df_age = df_source_list["age"]
@@ -30,8 +30,8 @@ def apply_transformation(df_source_list):
     df_age["Ticket #"] = df_age["Ticket #"].astype(str)
     df_age = df_age[["Ticket #", "age_in_days", "age_in_year_month_day"]]
 
-    df_cluster["Ticket #"] = df_cluster["Ticket #"].astype(str)
-    df_cluster = df_cluster[["Ticket #", "Group Class"]]
+    # df_cluster["Ticket #"] = df_cluster["Ticket #"].astype(str)
+    # df_cluster = df_cluster[["Ticket #", "Group Class"]]
 
     df_sentiment["Ticket #"] = df_sentiment["Ticket #"].astype(str)
     df_sentiment = df_sentiment[["Ticket #", "Sentiment", "Positive", "Negative", "Neutral", "Mixed"]]
@@ -42,8 +42,8 @@ def apply_transformation(df_source_list):
     df_result["Ticket #"] = df_result["Ticket #"].astype(str)
     df_result = df_result.merge(df_age, on="Ticket #", how="left")
     
-    df_result["Ticket #"] = df_result["Ticket #"].astype(str)
-    df_result = df_result.merge(df_cluster, on="Ticket #", how="left")
+    # df_result["Ticket #"] = df_result["Ticket #"].astype(str)
+    # df_result = df_result.merge(df_cluster, on="Ticket #", how="left")
     
     df_result["Ticket #"] = df_result["Ticket #"].astype(str)
     df_result = df_result.merge(df_sentiment, on="Ticket #", how="left")
@@ -61,7 +61,7 @@ def get_source_list():
     return {
         "age"       : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/complaints-without-multilines'),
         "source"    : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/complaints-with-age'),
-        "cluster"   : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/clustered-mails'),
+        # "cluster"   : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/clustered-mails'),
         "sentiment" : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/sentiment-analysis'),
         "priority"  : s3_helper.get_df_from_s3(DATALAKE_BUCKET, f'{ENRICHED_PREFIX}/complaints-priority')
     }
