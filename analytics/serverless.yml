@@ -1,0 +1,38 @@
+service: webinar-analysis
+
+plugins:
+  - serverless-python-requirements
+
+package:
+  exclude:
+    - .serverless/**
+    - node_modules/**
+    - package-lock.json
+
+custom:
+  tags: ${file(../tags.yml)}
+  prefix: ${self:service}-${self:provider.stage}
+  policies: ${file(.policy/iam-role-statements.yml):policies}
+  utilsLayerArn: ${cf:webinar-utils-shared-libs-${self:provider.stage}.UtilsLibsLambdaLayerArn}
+  pythonRequirements:
+    dockerizePip: non-linux
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'qa'}
+  region: us-east-1
+  runtime: python3.7
+  stackTags: ${self:custom.tags}
+  deploymentBucket: kranio-serverless-deployments
+  iamRoleStatements: ${self:custom.policies}
+  environment:
+    DATALAKE_BUCKET: kranio-datalake
+    
+
+functions:
+  applySentimentAnalysis:
+    handler: steps/sentiment-analysis/apply_transformation.handler
+    memorySize: 3008
+    timeout: 900
+    layers:
+      - ${self:custom.utilsLayerArn}

@@ -1,0 +1,35 @@
+service: webinar-utils-shared-libs
+
+package:
+  exclude:
+    - .idea/**
+    - .serverless/**
+    - packages/**
+    - node_modules/**
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+  tags: ${file(../tags.yml)}
+
+provider:
+  name: aws
+  runtime: python3.7
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  deploymentBucket: kranio-serverless-deployments
+  stackTags: ${self:custom.tags}
+  logRetentionInDays: 7
+
+layers:
+  UtilsLibs:
+    path: layers
+    name: ${self:custom.prefix}
+    description: This layer has utils library to provide common tasks functions
+    compatibleRuntimes:
+      - python3.7
+
+resources:
+  Outputs:
+    UtilsLibsLambdaLayerArn:
+      Value:
+        Ref: UtilsLibsLambdaLayer

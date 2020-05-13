@@ -1,0 +1,12 @@
+{
+  "name": "sura-infra",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "serverless-python-requirements": "^5.0.1"
+  }
+}

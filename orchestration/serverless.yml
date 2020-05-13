@@ -1,0 +1,137 @@
+service: webinar-orchestration
+
+plugins:
+  - serverless-step-functions
+
+custom:
+  tags: ${file(../tags.yml)}
+  prefix: ${self:service}-${self:provider.stage}
+  analysisProject: webinar-analysis-${self:provider.stage}
+  analytics:
+    sentimentAnalysis: ${cf:${self:custom.analysisProject}.ApplySentimentAnalysisLambdaFunctionQualifiedArn}
+  
+  #   textQualityScoreLambda: ${cf:sura-analysis-TextQualityScore-dev.ApplyTransformationComprehendLambdaFunctionQualifiedArn}
+  # generatePriorityLambda: ${cf:sura-analysis-TextQualityScore-dev.GeneratePriorityLambdaFunctionQualifiedArn}
+  # emailCountByAgeLambda: ${cf:sura-analysis-EmailCountByAge-dev.ApplyTransformationLambdaFunctionQualifiedArn}
+  # rankingRegionsComplaintsLambda: ${cf:sura-analysis-RankingRegionsComplaints-dev.ApplyTransformationLambdaFunctionQualifiedArn}
+  # clusteringMailsL1Lambda: ${cf:sura-analysis-ClusteringMails-dev.ApplyTransformationL1LambdaFunctionQualifiedArn}
+  # clusteringMailsL2Lambda: ${cf:sura-analysis-ClusteringMails-dev.ApplyTransformationL2LambdaFunctionQualifiedArn}
+  # complaintsWithoutMultilineLambda: ${cf:sura-analysis-ComplaintsMultiline-dev.ApplyTransformationLambdaFunctionQualifiedArn}
+  # joiningDataLambda: ${cf:sura-analysis-ComplaintsMultiline-dev.JoiningDataLambdaFunctionQualifiedArn}
+  # wordCloudLambda: ${cf:sura-analysis-ComplaintsMultiline-dev.WordCloudLambdaFunctionQualifiedArn}
+  # createClusterEndpointLambda: ${cf:sura-infra-dev.CreateClusterEndpointLambdaFunctionQualifiedArn}
+  # deleteClusterEndpointLambda: ${cf:sura-infra-dev.DeleteClusterEndpointLambdaFunctionQualifiedArn}
+  # crawlerLambda: ${cf:sura-infra-dev.CrawlerLambdaFunctionQualifiedArn}
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  runtime: python3.7
+  stackTags: ${self:custom.tags}
+  deploymentBucket: kranio-serverless-deployments
+
+stepFunctions:
+  validate: true
+  stateMachines:
+    WebinarEtlStateMachine:
+      name: WebinarEtlStateMachine
+      tags: ${self:custom.tags}
+      definition:
+        StartAt: TestFunction
+        States:
+          TestFunction:
+            Type: Task
+            Resource: ${self:custom.analytics.sentimentAnalysis}
+            End: True
+  
+# stepFunctions:
+#   validate: true # (disabled by default)
+#   stateMachines:
+#     SuraTransformationsStateMachine:
+#       name: SuraTransformationsStateMachine
+#       tags: ${self:custom.tags}
+#       definition:
+#         StartAt: TransformationsParallel
+#         States:
+#           TransformationsParallel:
+#             Type: Parallel
+#             Branches:
+#               - StartAt: TextQualityScore
+#                 States:
+#                   TextQualityScore:
+#                     Type: Task
+#                     Resource:
+#                       ${self:custom.textQualityScoreLambda}
+#                     Next: GeneratePriority
+#                   GeneratePriority:
+#                     Type: Task
+#                     Resource:
+#                       ${self:custom.generatePriorityLambda}
+#                     End: true
+#               - StartAt: EmailCountByAge
+#                 States:
+#                   EmailCountByAge:
+#                     Type: Task
+#                     Resource:
+#                       ${self:custom.emailCountByAgeLambda}
+#                     End: true
+#               - StartAt: RankingRegionsComplaints
+#                 States:
+#                   RankingRegionsComplaints:
+#                     Type: Task
+#                     Resource:
+#                       ${self:custom.rankingRegionsComplaintsLambda}
+#                     End: true
+#               - StartAt: SentimentAnalysis
+#                 States:
+#                   SentimentAnalysis:
+#                     Type: Task
+#                     Resource:
+#                       ${self:custom.sentimentAnalysisLambda}
+#                     End: true
+#               - StartAt: ComplaintsWithoutMultiline
+#                 States:
+#                   ComplaintsWithoutMultiline:
+#                     Type: Task
+#                     Resource:
+#                       ${self:custom.complaintsWithoutMultilineLambda}
+#                     End: true
+#               - StartAt: CreateClusterEndpoint
+#                 States:
+#                   CreateClusterEndpoint:
+#                     Type: Task
+#                     Resource:
+#                       ${self:custom.createClusterEndpointLambda}
+#                     Next: ClusteringMailsLevel1
+#                   ClusteringMailsLevel1:
+#                     Type: Task
+#                     Resource:
+#                       ${self:custom.clusteringMailsL1Lambda}
+#                     Next: ClusteringMailsLevel2
+#                   ClusteringMailsLevel2:
+#                     Type: Task
+#                     Resource:
+#                       ${self:custom.clusteringMailsL2Lambda}
+#                     Next: DeleteClusterEndpoint
+#                   DeleteClusterEndpoint:
+#                     Type: Task
+#                     Resource:
+#                       ${self:custom.deleteClusterEndpointLambda}
+#                     End: true
+#             Next: JoiningData
+#           JoiningData:
+#             Type: Task
+#             Resource:
+#               ${self:custom.joiningDataLambda}
+#             Next: WordCloud
+#           WordCloud:
+#             Type: Task
+#             Resource:
+#               ${self:custom.wordCloudLambda}
+#             Next: StartCrawler
+#           StartCrawler:
+#             Type: Task
+#             Resource:
+#               ${self:custom.crawlerLambda}
+#             End: true

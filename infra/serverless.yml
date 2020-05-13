@@ -1,0 +1,88 @@
+service: webinar-infra
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  prefix: ${self:service}-${self:provider.stage}
+  policies: ${file(.policy/iam-role-statements.yml):policies}
+  tags: ${file(../tags.yml)}
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'qa'}
+  region: us-east-1
+  runtime: python3.7
+  stackTags: ${self:custom.tags}
+  deploymentBucket: kranio-serverless-deployments
+  iamRoleStatements: ${self:custom.policies}
+
+functions:
+  createClusterEndpoint:
+    handler: functions/comprehend_cluster_endpoint.create
+    timeout: 900
+  deleteClusterEndpoint:
+    handler: functions/comprehend_cluster_endpoint.delete
+    timeout: 900
+  crawler:
+    handler: functions/crawler.handler
+    timeout: 900
+    environment:
+      CRAWLER: !Ref GlueCrawlerWebinarKranio
+
+resources:
+  Resources:
+    CrawlerRoleWebinarKranio:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - glue.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: root
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Resource: '*'
+                  Action: '*'
+
+    GlueDBwebinarKranio:
+      Type: AWS::Glue::Database
+      Properties:
+        CatalogId: !Ref AWS::AccountId
+        DatabaseInput:
+          Name: kranio-webinar-glue-db
+          Description: webinar demostration
+
+    GlueCrawlerWebinarKranio:
+      Type: AWS::Glue::Crawler
+      Properties:
+        Name: kranio-webinar-glue-crawler
+        Role: !GetAtt CrawlerRoleWebinarKranio.Arn
+        DatabaseName: !Ref GlueDBwebinarKranio
+        Targets:
+          S3Targets:
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/enriched/word-cloud
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/enriched/complaints-standard
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/enriched/complaints-priority
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/enriched/clustered-mails
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/enriched/sentiment-analysis
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/enriched/tickets-by-sentiments
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/enriched/tickets-by-city-state-sentiments
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/enriched/text-quality-score-with-comprehend
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/enriched/complaints-with-age
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/enriched/complaints-count-by-age
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/enriched/ranking-regions-complaints
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/enriched/complaints-without-multilines
+            - Path: s3://kranio-datalake/internal/webinar/leoCamilo/raw/ratings
+        SchemaChangePolicy:
+          UpdateBehavior: LOG
+          DeleteBehavior: LOG

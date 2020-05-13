@@ -1,0 +1,13 @@
+policies:
+  - Effect: Allow
+    Action:
+      - s3:*
+    Resource:
+      - arn:aws:s3:::kranio-datalake
+      - arn:aws:s3:::kranio-datalake/*
+
+  - Effect: Allow
+    Action:
+      - comprehend:*
+      - glue:*
+    Resource: '*'
