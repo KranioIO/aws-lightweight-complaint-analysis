@@ -3,19 +3,19 @@ image: leocamilo/bitbucket-pipeline-aws-serverless:0.0.1
 pipelines:
   default:
     - step:
-      name: deploy solution
-      deployment: Develop
-      trigger: manual
-      services:
-        - docker
-      caches:
-        - docker
-        - pip
-        - node
-      script:
-        # - pip3 install awscli --upgrade --user
-        # - export PATH=~/.local/bin:$PATH
-        - cd infra && serverless deploy --stage dev && cd ..
-        - cd utils-shared-lib && serverless deploy --stage dev && cd ..
-        - cd analytics && serverless deploy --stage dev && cd ..
-        - cd orchestration && serverless deploy --stage dev && cd ..
+        name: deploy solution
+        deployment: Develop
+        trigger: manual
+        services:
+          - docker
+        caches:
+          - docker
+          - pip
+          - node
+        script:
+          # - pip3 install awscli --upgrade --user
+          # - export PATH=~/.local/bin:$PATH
+          - cd infra && serverless deploy --stage dev && cd ..
+          - cd utils-shared-lib && serverless deploy --stage dev && cd ..
+          - cd analytics && serverless deploy --stage dev && cd ..
+          - cd orchestration && serverless deploy --stage dev && cd ..
